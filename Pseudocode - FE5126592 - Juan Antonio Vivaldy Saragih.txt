@@ -1,0 +1,80 @@
+Topik: Shopping Cart sederhana
+Nama: Juan Antonio Vivaldy Saragih
+CAMP ID: FE5126592
+
+PROGRAM ShoppingCart
+
+READ "barang" WITH array of object
+STORE "barang" WITH [{nama: "Baju", harga: 10000}, {nama: "Celana", harga: 15000}, {nama: "Topi", 
+harga: 10000}, {nama: "Sepatu", harga: 20000}]
+
+READ "metode" WITH array of string
+STORE "metode" WITH ["Cash", "Debit"]
+
+READ AND WRITE "keranjang" WITH array of object default []
+READ AND WRITE "totalHarga" WITH number default 0
+READ AND WRITE "metodePembayaran" WITH string default ""
+READ AND WRITE "alamat" WITH string default ""
+
+FUNTION pertanyaan(pertanyaan, namaStep)
+    INPUT "jawabanPertanyaan" OF QUESTION 'pertanyaan'
+
+    IF "jawabanPertanyaan" EQUALS "N"
+        GOTO STEP 'namaStep'
+    ELSE 
+        STORE "jawabanPertanyaan" WITH ""
+        RETURN
+    END IF
+END FUNCTION
+
+FUNCTION resetProgram()
+    STORE "keranjang" WITH []
+    STORE "totalHarga" WITH 0
+    STORE "metodePembayaran" WITH ""
+    STORE "alamat" WITH ""
+END FUNCTION
+
+STEP "PilihBarang"
+PRINT LIST OF "barang" WITH "nama" AND "harga"
+
+INPUT "barangPilihan" WITH "nama" AND "harga" AND "jumlah" OF LIST "barang"
+    STORE OR PUSH TO "keranjang" WITH "barangPilihan"
+
+FUNCTION hitungTotalHarga
+    STORE "totalHarga" WITH 0
+    FOR EACH "item" OF "keranjang"
+        STORE "totalHarga" WITH "totalHarga" + ("item.harga" * "item.jumlah")
+    END FOR EACH
+END FUNCTION
+
+CALL hitungTotalHarga()
+
+STEP "ListBarang"
+PRINT LIST OF "keranjang" WITH "nama" AND "harga" AND "jumlah" AND "totalHarga"
+
+CALL pertanyaan("Apakah anda ingin memilih barang lagi? (Y/N)", "PilihBarang")
+
+STEP "PilihMetodePembayaran"
+PRINT LIST OF "metode" WITH string
+
+INPUT "metodePembayaranPilihan" WITH ONE SELECTED "metode" FROM LIST OF "metode"
+    STORE "metodePembayaran" WITH "metodePembayaranPilihan"
+
+INPUT "alamatPilihan" WITH string
+    STORE "alamat" WITH "alamatPilihan"
+
+PRINT "metodePembayaran" AND "alamat"
+
+CALL pertanyaan("Apakah pembayaran dan alamat sudah sesuai? (Y/N)", "PilihMetodePembayaran")
+
+PRINT LIST OF "keranjang" WITH "nama" AND "harga" AND "jumlah" AND "totalHarga" AND "metodePembayaran" AND "alamat"
+
+CALL pertanyaan("Apakah anda ingin lanjut membayar? (Y/N)", "ListBarang")
+
+DO Payment with "metodePembayaran" AND "totalHarga"
+
+CALL resetProgram()
+
+END PROGRAM
+
+
